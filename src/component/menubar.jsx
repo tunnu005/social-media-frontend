@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Home, Search, Compass, PlusCircle, Bell, X, Search as SearchIcon, MessageCircleMore, Menu } from 'lucide-react';
+import React, { useState, useEffect, useContext } from 'react';
+import { Home, Search, Compass, PlusCircle, Bell, X, Search as SearchIcon, MessageCircleMore, Menu,LogOut } from 'lucide-react';
 import axios from 'axios';
 import { serverapi } from '@/data/server';
 import UserCard from './Usercard';
+import AuthContext, { AuthProvider } from '@/utilitis/authContextprovider';
+import { useNavigate } from 'react-router-dom';
 export default function ResponsiveVerticalMenu({userId}) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState([]);
+
+  
+  const navigator = useNavigate();
 
   const handleSearch = async (e) => {
 
@@ -17,7 +22,7 @@ export default function ResponsiveVerticalMenu({userId}) {
     const term = e.target.value;
     console.log(term);
     setSearchTerm(term);
-
+    
     if (term.trim() === '') {
       setUsers([]);
       return;
@@ -59,6 +64,18 @@ export default function ResponsiveVerticalMenu({userId}) {
     setIsInputFocused(false);
   };
 
+  const { setIsAuthenticated } = useContext(AuthContext);
+  const handleSignout = async() =>{
+    try { 
+      const response = await axios.post(`${serverapi}/api/auth/logout`, {},{withCredentials:true});
+      console.log("logout resp : ", response)
+      setIsAuthenticated(false);
+      navigator('/auth')
+    } catch (error) {
+      console.error("Sign out failed", error);
+    }
+  }
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -77,6 +94,7 @@ export default function ResponsiveVerticalMenu({userId}) {
     { icon: MessageCircleMore, label: 'Chats', href: '/Chat' },
     { icon: PlusCircle, label: 'Create', href: '/Create' },
     { icon: Bell, label: 'Notifications', href: '#' },
+    { icon: LogOut, label: 'Log Out', onClick : handleSignout }
   ];
 
   

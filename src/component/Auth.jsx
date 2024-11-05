@@ -72,7 +72,7 @@ function AuthPage() {
     e.preventDefault();
 
     const user = await login({ username, password });
-    console.log(user);
+    console.log('user at auth : ',user);
 
     if (user.success) {
       toast(user.message, {
@@ -80,12 +80,12 @@ function AuthPage() {
         action: {
           label: "Okay",
           onClick: () => {
-            navigate('/');
+            navigate('/home');
           },
         },
       });
       setTimeout(() => {
-        navigate('/');
+        navigate('/home');
       }, 3000);
     } else {
       toast(user.message, {
