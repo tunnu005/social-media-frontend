@@ -9,7 +9,7 @@ import Lilmenu from "../component/lilmenubar";
 import { useNavigate, useParams } from 'react-router-dom';
 import { followUser, getProfile, unfollowUser } from '@/services/userServices';
 import { fetchPosts } from '@/services/postServices';
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
 
 const CoolProfilePage = () => {
     const [selectedPost, setSelectedPost] = useState(null);
@@ -18,10 +18,11 @@ const CoolProfilePage = () => {
     const [profile, setProfile] = useState({ username: '', bio: '', followers: 0, following: 0 });
     const [posts, setPosts] = useState([]);
     const [isFollowing, setIsFollowing] = useState(false);  // New state for follow status
+    const [loading, setLoading] = useState(false);
     const { userId, username } = useParams();
     console.log(username)
     const navigate = useNavigate();
-    const currentUser = Cookies.get('userId');
+    const currentUser = JSON.parse(localStorage.getItem('user'));
 
     const handleLike = () => {
         const newLikedState = !liked;
@@ -37,7 +38,7 @@ const CoolProfilePage = () => {
                 setProfile(profileData);
 
                 // Check if the current user is following this profile
-                if (profileData.followers.includes(currentUser)) {
+                if (profileData.followers.includes(currentUser.id)) {
                     setIsFollowing(true);  // User is already following
                 }
             } catch (error) {
@@ -45,7 +46,7 @@ const CoolProfilePage = () => {
             }
         };
         fetchProfile();
-    }, [userId, currentUser]);
+    }, []);
 
     useEffect(() => {
         const fetchUserPosts = async () => {
@@ -60,27 +61,32 @@ const CoolProfilePage = () => {
         fetchUserPosts();
     }, [userId]);
 
-    const handleFollow = async () => {
-        try {
-           if(isFollowing)
-           {
-            const resp = await unfollowUser({currentUsername:currentUser,usernameToUnfollow:username})
-           }else{
-            const response = await followUser({ usernameToFollow: username, currentUsername: currentUser });
-            console.log(response);
-           }
-
-            // Toggle follow status based on current state
-            setIsFollowing(!isFollowing);
-            // Update the follower count
+   const handleFollow = async () => {
+    setLoading(true); // Show loading spinner while waiting for response
+    try {
+       if(isFollowing) {
+            // Unfollow user
+            await unfollowUser({ currentUsername: currentUser.id, usernameToFollow: userId });
+            setIsFollowing(false);  // Set following state to false
             setProfile(prevProfile => ({
                 ...prevProfile,
-                followers: isFollowing ? prevProfile.followers - 1 : prevProfile.followers + 1
+                followers: prevProfile.followers - 1  // Decrease followers by 1
             }));
-        } catch (error) {
-            console.error('Error following/unfollowing user:', error);
+        } else {
+            // Follow user
+            await followUser({ usernameToFollow: userId, currentUsername: currentUser.id });
+            setIsFollowing(true);  // Set following state to true
+            setProfile(prevProfile => ({
+                ...prevProfile,
+                followers: prevProfile.followers + 1  // Increase followers by 1
+            }));
         }
-    };
+    } catch (error) {
+        console.error('Error following/unfollowing user:', error);
+    }
+    setLoading(false); // Hide loading spinner after response
+};
+
 
     return (
         <div className="min-h-screen bg-gray-100 p-8 flex">
@@ -114,7 +120,7 @@ const CoolProfilePage = () => {
                 </div>
                 
                 {/* Conditionally Render Edit or Follow Button */}
-                {currentUser && currentUser === username ? (
+                {currentUser && currentUser.name === username ? (
                     <Button className="w-full bg-gradient-to-r from-slate-950 via-gray-800 to-slate-950 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gradient-to-r hover:from-gray-700 hover:via-gray-900 hover:to-gray-700 hover:scale-105 hover:text-gray-100 transition-all duration-300 ease-in-out hover:shadow-[0_10px_20px_rgba(0,0,0,0.3)] relative overflow-hidden">
                         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 hover:opacity-30 transition-opacity duration-500"></span>
                         Edit Profile
@@ -122,7 +128,11 @@ const CoolProfilePage = () => {
                 ) : (
                     <Button onClick={handleFollow} className="w-full bg-gradient-to-r from-slate-950 via-gray-800 to-slate-950 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gradient-to-r hover:from-gray-700 hover:via-gray-900 hover:to-gray-700 hover:scale-105 hover:text-gray-100 transition-all duration-300 ease-in-out hover:shadow-[0_10px_20px_rgba(0,0,0,0.3)] relative overflow-hidden">
                         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 hover:opacity-30 transition-opacity duration-500"></span>
-                        {isFollowing ? 'Following' : 'Follow'}
+                        {isFollowing ? (
+                            loading ? 'UnFollowing...' : "Follwing"
+                        ):(
+                            loading ? "Following...":"Follow"
+                        )}
                     </Button>
                 )}
             </Card>

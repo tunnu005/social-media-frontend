@@ -9,6 +9,12 @@ import image1 from "../../public/images/3.png"
 import image2 from "../../public/images/4.png"
 import image3 from "../../public/images/5.png"
 import Lilmenu from "../component/lilmenubar"
+import { io } from 'socket.io-client'
+import InnerComponent from '@/component/chatComponent'
+import axios from 'axios'
+import { serverapi } from '@/data/server'
+import Chatindex from '@/component/chatindex'
+
 
 const mockChats = [
   { id: 1, name: 'John Doe', profilePic: image1, lastMessage: 'Hey there!' },
@@ -17,6 +23,8 @@ const mockChats = [
   
   // Add more mock chats here if needed
 ]
+
+const socket = io('http://localhost:8000')
 
 const initialChatData = {
   1: [
@@ -34,13 +42,15 @@ const initialChatData = {
 }
 
 const initialBackgroundSettings = {
-  1: { bgColor: '#f0f4f8', bgImage: '' },
-  2: { bgColor: '#f0f4f8', bgImage: '' },
-  3: { bgColor: '#f0f4f8', bgImage: '' },
+  "1": { bgColor: '#f0f4f8', bgImage: '' },
+  "2": { bgColor: '#f0f4f8', bgImage: '' },
+  "3": { bgColor: '#f0f4f8', bgImage: '' },
 }
 
 export default function ChatComponent() {
-  const [selectedChat, setSelectedChat] = useState(mockChats[0])
+  const [index,setindex] = useState(true);
+  const [selectedChat, setSelectedChat] = useState({_id:"1",username:"",profilePic:""})
+  const [userFollow,setUserFollow] = useState([{_id:"1",username:"",profilePic:""}]);
   const [chatData, setChatData] = useState(initialChatData)
   const [draftMessages, setDraftMessages] = useState({})
   const [newMessage, setNewMessage] = useState('')
@@ -49,12 +59,35 @@ export default function ChatComponent() {
 
   const [backgroundSettings, setBackgroundSettings] = useState(initialBackgroundSettings)
 
+  
+
   const emojiPickerRef = useRef(null)
   const fileInputRef = useRef(null)
   const messagesEndRef = useRef(null)
+  const user = JSON.parse(localStorage.getItem('user'))
+
+  useEffect(()=>{
+    const getdata = async()=>{
+        try {
+          const resp = await axios.get(`${serverapi}/api/chat/getUsersfollow`,{withCredentials:true});
+          // console.log(resp.data);
+          setUserFollow(resp.data);
+          
+
+        } catch (error) {
+          console.error(error);
+        }
+    }
+    getdata();
+  },[])
+
+  useEffect(() =>{
+    console.log('user at chat',user)
+    socket.emit('join',user.id)
+  },[])
 
   useEffect(() => {
-    setNewMessage(draftMessages[selectedChat.id] || '')
+    setNewMessage(draftMessages[selectedChat._id] || '')
   }, [selectedChat, draftMessages])
 
   useEffect(() => {
@@ -64,10 +97,10 @@ export default function ChatComponent() {
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      const updatedMessages = [...chatData[selectedChat.id], { id: Date.now(), text: newMessage, sender: 'You' }]
-      setChatData({ ...chatData, [selectedChat.id]: updatedMessages })
+      const updatedMessages = [...chatData[selectedChat._id], { id: Date.now(), text: newMessage, sender: 'You' }]
+      setChatData({ ...chatData, [selectedChat._id]: updatedMessages })
       setNewMessage('')
-      setDraftMessages({ ...draftMessages, [selectedChat.id]: '' })
+      setDraftMessages({ ...draftMessages, [selectedChat._id]: '' })
     }
   }
 
@@ -84,7 +117,13 @@ export default function ChatComponent() {
 
   const handleInputChange = (e) => {
     setNewMessage(e.target.value)
-    setDraftMessages({ ...draftMessages, [selectedChat.id]: e.target.value })
+    setDraftMessages({ ...draftMessages, [selectedChat._id]: e.target.value })
+  }
+
+  const handleselect = (chat) => {
+    console.log("clicked")
+    setSelectedChat(chat);
+    setindex(false)
   }
 
   useEffect(() => {
@@ -108,7 +147,7 @@ export default function ChatComponent() {
   const handleBgColorChange = (color) => {
     setBackgroundSettings({
       ...backgroundSettings,
-      [selectedChat.id]: { ...backgroundSettings[selectedChat.id], bgColor: color, bgImage: '' },
+      [selectedChat._id]: { ...backgroundSettings[selectedChat._id], bgColor: color, bgImage: '' },
     })
   }
 
@@ -119,7 +158,7 @@ export default function ChatComponent() {
       reader.onloadend = () => {
         setBackgroundSettings({
           ...backgroundSettings,
-          [selectedChat.id]: { ...backgroundSettings[selectedChat.id], bgImage: reader.result, bgColor: '' },
+          [selectedChat._id]: { ...backgroundSettings[selectedChat._id], bgImage: reader.result, bgColor: '' },
         })
       }
       reader.readAsDataURL(file)
@@ -136,30 +175,38 @@ export default function ChatComponent() {
       <div className="w-1/3  border-r bg-gray-100 p-4 h-screen overflow-y-auto">
         <h2 className="text-xl font-semibold mb-4">Chats</h2>
         <ScrollArea className="h-[calc(100vh-100px)]">
-          {mockChats.map(chat => (
+          {userFollow.map(chat => (
             <div
-              key={chat.id}
+              key={chat._id}
               className={`flex items-center p-3 mb-2 cursor-pointer rounded-lg transition-all transform hover:scale-105 ${
-                selectedChat.id === chat.id ? 'bg-blue-100' : 'hover:bg-gray-200'
+                selectedChat._id === chat._id ? 'bg-blue-100' : 'hover:bg-gray-200'
               }`}
-              onClick={() => setSelectedChat(chat)}
+              onClick={() => {handleselect(chat);}} 
             >
               <Avatar className="w-12 h-12 mr-4 ml-4 transition-transform duration-300 ease-in-out hover:scale-110 hover:rotate-3 hover:shadow-xl hover:shadow-blue-500/50">
-                <AvatarImage src={chat.profilePic} alt={chat.name} />
-                <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
+                <AvatarImage src={chat.profilePic} alt={chat.username} />
+                <AvatarFallback>{chat.username}</AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-bold">{chat.name}</h3>
-                <p className="text-sm text-gray-500">{chat.lastMessage}</p>
+                <h3 className="font-bold">{chat.username}</h3>
+                {/* <p className="text-sm text-gray-500">{chat.lastMessage}</p> */}
               </div>
             </div>
           ))}
         </ScrollArea>
       </div>
 
+    {
+      !index?   <InnerComponent 
+      selectedChat={selectedChat} 
+      socket={socket}
+      backgroundSettings={backgroundSettings} 
+      handleBgImageChange={handleBgImageChange}
+      handleBgColorChange={handleBgColorChange}
+    /> : <Chatindex/>
+    }
       {/* Right Side: Chat Interface */}
-      <div className="w-2/3 flex flex-col">
-        {/* Chat Header with Settings Icon */}
+      {/* <div className="w-2/3 flex flex-col">
         <div className="border-b bg-gray-100 p-4 flex items-center space-x-4 justify-between">
           <div className="flex items-center space-x-4">
             <Avatar className="w-10 h-10 transition-transform duration-300 ease-in-out hover:scale-110 hover:rotate-3 hover:shadow-xl hover:shadow-blue-500/50">
@@ -169,7 +216,6 @@ export default function ChatComponent() {
             <h2 className="font-bold text-lg text-gray-700">{selectedChat.name}</h2>
           </div>
 
-          {/* Settings Icon */}
           <button
             className="focus:outline-none hover:scale-110 transition-transform"
             onClick={() => setShowSettings(true)}
@@ -178,7 +224,6 @@ export default function ChatComponent() {
           </button>
         </div>
 
-        {/* Chat Messages */}
         <ScrollArea
           className="flex-1 p-4 space-y-4 overflow-y-auto"
           style={{
@@ -204,12 +249,10 @@ export default function ChatComponent() {
               </div>
             </div>
           ))}
-          <div ref={messagesEndRef} /> {/* This empty div helps scroll to the bottom */}
+          <div ref={messagesEndRef} /> 
         </ScrollArea>
 
-        {/* Message Input */}
         <div className="border-t bg-white p-4 flex items-center space-x-2 relative">
-          {/* Emoji Picker */}
           <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="focus:outline-none">
             <Smile className="w-6 h-6 text-gray-600" />
           </button>
@@ -219,7 +262,6 @@ export default function ChatComponent() {
             </div>
           )}
 
-          {/* Input Box */}
           <Input
             className="flex-1"
             placeholder="Type a message..."
@@ -228,20 +270,17 @@ export default function ChatComponent() {
             onKeyDown={handleKeyPress}
           />
 
-          {/* Send Button */}
           <Button onClick={handleSendMessage} className="bg-blue-500 text-white hover:bg-blue-600">
             <Send className="w-5 h-5" />
           </Button>
         </div>
       </div>
 
-      {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-20">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h3 className="text-lg font-bold mb-4">Customize Chat Background for {selectedChat.name}</h3>
 
-            {/* Color Picker */}
             <label className="block mb-2 text-gray-700">Choose Background Color</label>
             <input
               type="color"
@@ -250,7 +289,6 @@ export default function ChatComponent() {
               className="w-full h-10 mb-4 cursor-pointer"
             />
 
-            {/* Image Upload */}
             <label className="block mb-2 text-gray-700">Upload Background Image</label>
             <input
               type="file"
@@ -270,7 +308,7 @@ export default function ChatComponent() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
       </div>
     </div>
   )

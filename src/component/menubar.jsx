@@ -114,7 +114,7 @@ export default function ResponsiveVerticalMenu({userId}) {
       <div className={`fixed top-0 left-0 h-screen bg-gray-100 shadow-lg p-4 z-40 transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'w-64' : 'w-0'} lg:w-64 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
         {/* App Name */}
         <div className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent hover:from-blue-400 hover:via-green-500 hover:to-yellow-500 transition-all duration-500 ease-in-out hover:scale-110">
-         Buzzzy
+         Vibely
         </div>
 
         {/* Menu Items */}

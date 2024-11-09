@@ -16,11 +16,15 @@ const Home = () => {
   const observer = useRef(null);
   const [loading, setLoading] = useState(false); // Add loading state to prevent multiple fetches
   const loaderRef = useRef(null);
+  const [userloading,setuserloading] = useState(true); // Add loading state to prevent multiple
 
 
   // Fetch user profile
   useEffect(() => {
+   // Set loading true before fetching
     const fetchProfile = async () => {
+      setuserloading(true); 
+
       try {
         const profile = await getUser();
         console.log('Profile loaded',profile)
@@ -28,9 +32,10 @@ const Home = () => {
       } catch (error) {
         console.error('Error fetching profile:', error);
       }
+      setuserloading(false); 
     };
-
     fetchProfile();
+    // Set loading false after fetching
   }, []);
 
   // Fetch initial posts
@@ -195,6 +200,7 @@ const Home = () => {
           following={ProfInfo.following || 0}
           posts={ProfInfo.posts || 0}
           userId={ProfInfo._id || 0}
+          loading={userloading}
         />
       </div>
     </div>

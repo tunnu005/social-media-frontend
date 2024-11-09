@@ -32,7 +32,18 @@ function AuthPage() {
 
   const handleSubmitSignup = async (e) => {
     e.preventDefault();
+
+    // Validation for required fields
+    if (!username || !email || !password || !birthDate || !role || !profilePic || !bio) {
+      toast("All fields are required", {
+        description: "Please fill out all fields, including birth date, profile picture, bio, and role.",
+      });
+      setLoading(false);
+      return;
+    }
     setLoading(true); // Start loading
+
+
     console.log({ username, email, password, birthDate, role, profilePic, bio });
 
     const formData = new FormData();
@@ -72,9 +83,10 @@ function AuthPage() {
     e.preventDefault();
 
     const user = await login({ username, password });
-    console.log('user at auth : ',user);
+    console.log('user at auth : ', user);
 
     if (user.success) {
+      localStorage.setItem('user', JSON.stringify(user.user));
       toast(user.message, {
         description: user.description,
         action: {
@@ -139,7 +151,7 @@ function AuthPage() {
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
-             
+
               <TabsContent value="signin">
                 <form className="space-y-4" onSubmit={handleLogin}>
                   <div className="space-y-2">
@@ -251,7 +263,7 @@ function AuthPage() {
                       value={bio}
                       onChange={handleBioChange}
                       maxLength={150}
-                      
+
                     />
                     <div className="text-sm text-gray-600">
                       {bio.length} / 150 characters
@@ -314,7 +326,7 @@ function AuthPage() {
           </CardFooter>
         </Card>
       </div>
-      <Toaster className="w-[500px]"/>
+      <Toaster className="w-[500px]" />
     </Fade>
   );
 }

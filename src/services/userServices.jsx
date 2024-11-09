@@ -19,8 +19,8 @@ export const followUser = async ({usernameToFollow,currentUsername}) => {
     return responce.data
 }
 
-export const unfollowUser = async ({usernameToUnfollow, currentUsername}) => {
-    console.log(usernameToUnfollow,currentUsername);
-    const responce = await axios.post(`${serverapi}/api/users/unfollow`, { usernameToUnfollow, currentUsername }, {withCredentials : true});
+export const unfollowUser = async ({usernameToFollow, currentUsername}) => {
+    console.log(usernameToFollow,currentUsername);
+    const responce = await axios.post(`${serverapi}/api/users/unfollow`, { usernameToFollow, currentUsername }, {withCredentials : true});
     return responce.data
 }
