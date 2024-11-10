@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Home, Search, Compass, PlusCircle, Bell, X, Search as SearchIcon, MessageCircle, Menu, LogOut } from 'lucide-react';
 import axios from 'axios';
 import { serverapi } from '@/data/server';
-import UserCard from './UserCard.jsx';
+import UserCard from '@/component/Usercard';
 import AuthContext from '@/utilitis/authContextprovider';
 import { useNavigate } from 'react-router-dom';
 
