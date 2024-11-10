@@ -20,7 +20,10 @@ const ChatFull = () => {
   useEffect(() => {
     // Initialize socket connection only once when component mounts
     if (User && !socketRef.current) {
-      const newSocket = io('http://localhost:8000');
+      const newSocket = io('wss://social-media-backend-1w5q.onrender.com', {
+        transports: ['websocket', 'polling']
+    });
+    
       socketRef.current = newSocket;
       setSocket(newSocket);
 
