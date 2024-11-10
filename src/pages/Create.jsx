@@ -25,7 +25,7 @@ const CreatePost = () => {
       formData.append('caption', caption);
 
       const resp = await createPost(formData);
-      console.log(resp);
+      // console.log(resp);
 
       if(resp.success){
         toast(resp.message,{

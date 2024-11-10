@@ -26,7 +26,7 @@ const Home = () => {
       setuserloading(true)
       try {
         const profile = await getUser();
-        console.log('Profile loaded', profile)
+        // console.log('Profile loaded', profile)
         setProfile(profile);
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -42,7 +42,7 @@ const Home = () => {
     try {
       setLoading(true); // Set loading true before fetching
       const initialPosts = await gethomepost({ page: 1, limit: 3 });
-      console.log('post', initialPosts)
+      // console.log('post', initialPosts)
       setPosts(initialPosts);
       setLoading(false); // Set loading false after fetching
     } catch (error) {

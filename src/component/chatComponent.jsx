@@ -19,7 +19,7 @@ const InnerComponent = ({ socket }) => {
 
     const {userId} = useParams()
 
-    console.log("selectedChat : ",userId)
+    // console.log("selectedChat : ",userId)
     const initialBackgroundSettings = {
         "1": { bgColor: '#f0f4f8', bgImage: '' },
         "2": { bgColor: '#f0f4f8', bgImage: '' },
@@ -59,7 +59,7 @@ const InnerComponent = ({ socket }) => {
     useEffect(()=>{
            const getreciever = async() =>{
             const respo = await getProfile(userId);
-            console.log("data reciver: ",respo)
+            // console.log("data reciver: ",respo)
             setSelectedChat(respo)
            }
            getreciever();
@@ -67,7 +67,7 @@ const InnerComponent = ({ socket }) => {
     const getmessage = async()=>{
         setloading(true);
         const respo = await axios.get(`${serverapi}/api/chat/getMessages/${user.id}/${userId}`)
-        console.log("data : ",respo.data)
+        // console.log("data : ",respo.data)
         setChatData(respo.data)
         setloading(false);
     }
@@ -77,7 +77,7 @@ const InnerComponent = ({ socket }) => {
         setChatData(initialData);
 
         socket.on('receive-message',(data)=>{
-            console.log('Received message',data)
+            // console.log('Received message',data)
             // const dataobjetc
             setChatData(prevData => [...prevData, data])
         });
@@ -120,10 +120,10 @@ const InnerComponent = ({ socket }) => {
     }
 
     const handleSendMessage = () => {
-        console.log('Sending message')
+        // console.log('Sending message')
         if (newMessage.trim()) {
             
-            console.log('receiverId : ',selectedChat._id)
+            // console.log('receiverId : ',selectedChat._id)
             socket.emit('private-message',{
                 senderId: user.id,
                 receiverId: selectedChat._id,

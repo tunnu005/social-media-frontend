@@ -44,7 +44,7 @@ function AuthPage() {
     setLoading(true); // Start loading
 
 
-    console.log({ username, email, password, birthDate, role, profilePic, bio });
+    // console.log({ username, email, password, birthDate, role, profilePic, bio });
 
     const formData = new FormData();
     formData.append('username', username);
@@ -58,7 +58,7 @@ function AuthPage() {
     const user = await signup(formData);
     setLoading(false); // Stop loading
 
-    console.log(user);
+    // console.log(user);
     if (user.success) {
       toast(user.message, {
         description: user.description,
@@ -83,7 +83,7 @@ function AuthPage() {
     e.preventDefault();
 
     const user = await login({ username, password });
-    console.log('user at auth : ', user);
+    // console.log('user at auth : ', user);
 
     if (user.success) {
       localStorage.setItem('user', JSON.stringify(user.user));
@@ -105,7 +105,7 @@ function AuthPage() {
         action: {
           label: "Okay",
           onClick: () => {
-            console.log("okay");
+            // console.log("okay");
           },
         },
       });

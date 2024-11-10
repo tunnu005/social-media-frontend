@@ -34,7 +34,7 @@ function App() {
 
   useEffect(() => {
     if (User && socket) {
-      console.log('user at chat', User);
+      // console.log('user at chat', User);
       socket.emit('join', User._id);
     }
   }, [User, socket]);

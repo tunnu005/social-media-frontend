@@ -124,7 +124,7 @@ export default function ChatComponent() {
   }
 
   const handleselect = (chat) => { 
-    console.log("clicked")
+    // console.log("clicked")
     setSelectedChat(chat._id);
     setindex(false)
     navigator(`/chat/${chat._id}`)

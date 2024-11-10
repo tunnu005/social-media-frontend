@@ -9,7 +9,7 @@ export const AuthProvider = ({children}) =>{
 
     const[isAuthenticated,setIsAuthenticated] = useState(null);
     const [User,setUser] = useState({})
-    console.log('AuthProvider1')
+    // console.log('AuthProvider1')
     useEffect(()=>{
        
         
@@ -18,7 +18,7 @@ export const AuthProvider = ({children}) =>{
               })
               .then(response => {
                 if (response.status === 200) {
-                  console.log('AuthProvider2')
+                  // console.log('AuthProvider2')
                   setIsAuthenticated(true);
                 }
               })
@@ -35,7 +35,7 @@ export const AuthProvider = ({children}) =>{
         // setuserloading(true)
         try {
           const profile = await getUser();
-          console.log('Profile loaded', profile)
+          // console.log('Profile loaded', profile)
           setUser(profile);
         } catch (error) {
           console.error('Error fetching profile:', error);

@@ -36,7 +36,7 @@ const CoolProfilePage = () => {
         //   setuserloading(true)
           try {
             const profile = await getUser();
-            console.log('Profile loaded', profile)
+            // console.log('Profile loaded', profile)
             setUserProfile(profile);
           } catch (error) {
             console.error('Error fetching profile:', error);

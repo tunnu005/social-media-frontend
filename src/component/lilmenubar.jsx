@@ -15,7 +15,7 @@ export default function ResponsiveVerticalMenu() {
   const handleSearch = async (e) => {
 
     const term = e.target.value;
-    console.log(term);
+    // console.log(term);
     setSearchTerm(term);
 
     if (term.trim() === '') {
@@ -25,7 +25,7 @@ export default function ResponsiveVerticalMenu() {
 
     try {
       const response = await axios.get(`${serverapi}/api/users/search`, { params: { term } });
-      console.log(response.data);
+      // console.log(response.data);
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -39,7 +39,7 @@ export default function ResponsiveVerticalMenu() {
         handleSearch({ target: { value: searchTerm } });
       }
     }, 300); // Adjust debounce delay as needed
-    console.log(searchTerm)
+    // console.log(searchTerm)
     return () => clearTimeout(debounceTimeout);
   }, [searchTerm]);
   const toggleDrawer = () => {

@@ -5,7 +5,7 @@ import axios from 'axios';
 const server = serverapi;
 export const login = async ({username, password}) => {
   const response = await axios.post(`${server}/api/auth/login`, { username, password }, {withCredentials: true});
-  console.log(response);
+  // console.log(response);
   return response.data;
 };
 
