@@ -16,23 +16,22 @@ const Home = () => {
   const observer = useRef(null);
   const [loading, setLoading] = useState(false); // Add loading state to prevent multiple fetches
   const loaderRef = useRef(null);
-  const [userloading,setuserloading] = useState(true); // Add loading state to prevent multiple
+  const [userloading, setuserloading] = useState(true); // Add loading state to prevent multiple
 
 
   // Fetch user profile
   useEffect(() => {
-   // Set loading true before fetching
+    // Set loading true before fetching
     const fetchProfile = async () => {
-      setuserloading(true); 
-
+      setuserloading(true)
       try {
         const profile = await getUser();
-        console.log('Profile loaded',profile)
+        console.log('Profile loaded', profile)
         setProfile(profile);
       } catch (error) {
         console.error('Error fetching profile:', error);
       }
-      setuserloading(false); 
+      setuserloading(false);
     };
     fetchProfile();
     // Set loading false after fetching
@@ -43,7 +42,7 @@ const Home = () => {
     try {
       setLoading(true); // Set loading true before fetching
       const initialPosts = await gethomepost({ page: 1, limit: 3 });
-      console.log('post',initialPosts)
+      console.log('post', initialPosts)
       setPosts(initialPosts);
       setLoading(false); // Set loading false after fetching
     } catch (error) {
@@ -142,11 +141,11 @@ const Home = () => {
     <div className="flex">
       {/* Fixed Vertical Menu */}
       <div className="fixed top-0 left-0 w-[15%] h-full z-20">
-        <VerticalMenu />
+        <VerticalMenu user={ProfInfo} />
       </div>
 
       {/* Instagram Feed */}
-      <div className="w-[65%] ml-[17%] h-screen pt-4">
+      <div className="w-[65%] ml-[17%] h-screen pt-4 lg:mt-0 mt-12">
         <div
           className="justify-end h-screen"
           style={{
@@ -158,9 +157,8 @@ const Home = () => {
         >
           {posts.map((post, index) => (
             <div
-              className={`post my-3 ${
-                visiblePosts.includes(index) ? 'animate__animated animate__fadeInBottomRight' : 'opacity-0'
-              }`}
+              className={`post my-3 ${visiblePosts.includes(index) ? 'animate__animated animate__fadeInBottomRight' : 'opacity-0'
+                }`}
               data-index={index}
               key={index}
               style={{ transition: 'opacity 0.5s ease', animationDelay: `${index == 0 ? index * 0.2 : 0.2}s` }}
@@ -191,7 +189,7 @@ const Home = () => {
       </div>
 
       {/* Fixed Profile Card */}
-      <div className="fixed top-0 right-0 w-[20%] mt-7 mr-12">
+      <div className="fixed top-0 right-0 w-[20%] mt-7 mr-12 hidden lg:block">
         <ProfileCard
           profilePicture={ProfInfo.profilePic || image1}
           username={ProfInfo.username || 'Default Username'}
@@ -203,6 +201,7 @@ const Home = () => {
           loading={userloading}
         />
       </div>
+
     </div>
   );
 };

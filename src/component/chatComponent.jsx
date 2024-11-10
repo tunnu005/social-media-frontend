@@ -7,12 +7,46 @@ import { Smile, Send, Settings } from "lucide-react"
 import EmojiPicker from 'emoji-picker-react'
 import { serverapi } from '@/data/server'
 import axios from 'axios'
+import { useParams } from 'react-router-dom'
+import { getProfile } from '@/services/userServices'
 
-const InnerComponent = ({ selectedChat, backgroundSettings, handleBgImageChange, handleBgColorChange,socket }) => {
+const InnerComponent = ({ socket }) => {
     const initialData = [
         {  message: "Hey! What's up?", senderId: "John Doe" },
         {  message: "Not much, working on a project.", senderId: "You" },
     ]
+    const [selectedChat, setSelectedChat] = useState({_id:"1",username:"",profilePic:""})
+
+    const {userId} = useParams()
+
+    console.log("selectedChat : ",userId)
+    const initialBackgroundSettings = {
+        "1": { bgColor: '#f0f4f8', bgImage: '' },
+        "2": { bgColor: '#f0f4f8', bgImage: '' },
+        "3": { bgColor: '#f0f4f8', bgImage: '' },
+      }
+      const [backgroundSettings, setBackgroundSettings] = useState(initialBackgroundSettings)
+
+      const handleBgImageChange = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            setBackgroundSettings({
+              ...backgroundSettings,
+              [selectedChat._id]: { ...backgroundSettings[selectedChat._id], bgImage: reader.result, bgColor: '' },
+            })
+          }
+          reader.readAsDataURL(file)
+        }
+      }
+
+      const handleBgColorChange = (color) => {
+        setBackgroundSettings({
+          ...backgroundSettings,
+          [selectedChat._id]: { ...backgroundSettings[selectedChat._id], bgColor: color, bgImage: '' },
+        })
+      }
     
     const [chatData, setChatData] = useState([ {message: "Hey! What's up?", senderId: "John Doe" },])
     const user = JSON.parse(localStorage.getItem('user')) 
@@ -21,16 +55,25 @@ const InnerComponent = ({ selectedChat, backgroundSettings, handleBgImageChange,
     // console.log("background : ",backgroundSettings)
     // console.log("senderId",user.id)
     // console.log("selectedChat : ",selectedChat._id)
+
+    useEffect(()=>{
+           const getreciever = async() =>{
+            const respo = await getProfile(userId);
+            console.log("data reciver: ",respo)
+            setSelectedChat(respo)
+           }
+           getreciever();
+    },[])
     const getmessage = async()=>{
         setloading(true);
-        const respo = await axios.get(`${serverapi}/api/chat/getMessages/${user.id}/${selectedChat._id}`)
-        console.log(respo.data)
+        const respo = await axios.get(`${serverapi}/api/chat/getMessages/${user.id}/${userId}`)
+        console.log("data : ",respo.data)
         setChatData(respo.data)
         setloading(false);
     }
     useEffect(()=>{
 
-       getmessage();
+        getmessage();
         setChatData(initialData);
 
         socket.on('receive-message',(data)=>{
@@ -96,7 +139,7 @@ const InnerComponent = ({ selectedChat, backgroundSettings, handleBgImageChange,
     return (
         <>
             {/* Right Side: Chat Interface */}
-            <div className="w-full flex flex-col">
+            <div className="w-full h-screen flex flex-col">
                 {/* Chat Header with Settings Icon */}
                 <div className="border-b bg-gray-100 p-4 flex items-center space-x-4 justify-between">
                     <div className="flex items-center space-x-4">
