@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState,useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
@@ -15,28 +15,31 @@ import { io } from 'socket.io-client';
 const ChatFull = () => {
   const { User } = useContext(AuthContext);
   const [socket, setSocket] = useState(null);
-  useEffect(() => {
-    const newSocket = io('http://localhost:8000');
-    setSocket(newSocket);
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    if (User && socket) {
-      // console.log('user at chat', User);
-      socket.emit('join', User._id);
+    // Initialize socket connection only once when component mounts
+    if (User && !socketRef.current) {
+      const newSocket = io('http://localhost:8000');
+      socketRef.current = newSocket;
+      setSocket(newSocket);
+
+      // Join room with User ID
+      newSocket.emit('join', User._id);
+
+      // Cleanup on component unmount
+      return () => {
+        newSocket.disconnect();
+      };
     }
-  }, [User, socket]);
+  }, [User]);
 
   return (
     <div className="max-h-screen w-full flex">
-      <InnerComponent socket={socket} />
+      <InnerComponent socket={socketRef.current} />
     </div>
   );
 };
-
 function App() {
   const { isAuthenticated } = useContext(AuthContext);
  
@@ -56,7 +59,7 @@ function App() {
           <Route path="/profile/:userId/:username" element={<Profile />} />
           <Route path="/create" element={<Create />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/chat/:userId" element={socket ? <ChatFull  /> : null} />
+          <Route path="/chat/:userId" element={<ChatFull  />} />
         </Route>
       </Routes>
     </Router>

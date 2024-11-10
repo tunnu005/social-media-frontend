@@ -75,7 +75,7 @@ const InnerComponent = ({ socket }) => {
 
         getmessage();
         setChatData(initialData);
-
+        if(!socket) return
         socket.on('receive-message',(data)=>{
             // console.log('Received message',data)
             // const dataobjetc
