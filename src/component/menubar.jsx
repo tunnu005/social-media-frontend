@@ -77,7 +77,7 @@ export default function ResponsiveVerticalMenu({ user }) {
           <Menu className="h-6 w-6" />
         </button> */}
         <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent">
-          Vibely
+          Buzzzy
         </div>
         <div className="flex space-x-4">
           {topMenuItems.map((item, index) => (
