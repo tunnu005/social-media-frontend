@@ -171,6 +171,7 @@ const Home = () => {
                 caption={post.caption}
                 initialLikes={post.likes}
                 initialComments={Comments}
+                likedby={post.likedByUser}
               />
             </div>
           ))}
