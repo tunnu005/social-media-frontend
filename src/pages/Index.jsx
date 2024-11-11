@@ -74,8 +74,9 @@ export default function Index() {
         </main>
 
         <footer className="mt-16 text-center text-sm text-gray-500 ">
-          <p>developed by <a href="https://www.instagram.com/taral_001/">Taral Patel</a></p>
+          <p>developed by <a href="https://www.instagram.com/taral_001/" className='underline'>Taral Patel</a></p>
           <p>&copy; {new Date().getFullYear()} Buzzzy. All rights reserved.</p>
+          <p className='mt-4'>NOTE: If you have any suggestions or encounter any issues, please feel free to reach out to me directly on Instagram.</p>
         </footer>
       </div>
     </div>
