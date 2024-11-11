@@ -1,29 +1,50 @@
-import React, { useState } from "react"
+import React, { useState,useCallback } from "react"
 import { Heart, MessageCircle, Share2, ChevronDown, ChevronUp, Send } from "lucide-react"
+import { serverapi } from "@/data/server";
+import { addlike } from "@/services/postServices";
+
+function debounce(func, delay) {
+  let timeout;
+  return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), delay);
+  };
+}
 
 export default function SocialCard({
+  postId,
   profilePicture,
   username,
   postImage,
   caption,
   initialLikes,
   initialComments,
-  onLike = () => {},
-  onComment = () => {},
-  onShare = () => {}
+  likedby,
+  onLike = () => { },
+  onComment = () => { },
+  onShare = () => { }
 }) {
-  const [liked, setLiked] = useState(false)
+  const [liked, setLiked] = useState(likedby)
   const [likes, setLikes] = useState(initialLikes)
   const [expanded, setExpanded] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const [comments, setComments] = useState(initialComments)
   const [newComment, setNewComment] = useState("")
 
+
+  const debouncedLikeDislike = useCallback(debounce((newLiked) => {
+    const repsonse = addlike({postId,liked:newLiked})
+    
+  }, 300), []);
+
   const handleLike = () => {
     const newLikedState = !liked
     setLiked(newLikedState)
     setLikes(likes + (newLikedState ? 1 : -1))
     onLike(newLikedState)
+
+
+    debouncedLikeDislike(newLikedState);
   }
 
   const handleAddComment = (e) => {
@@ -65,16 +86,15 @@ export default function SocialCard({
       <div className="p-3 sm:p-4">
         <div className="flex justify-between items-center mb-3 sm:mb-4">
           <button
-            className={`flex items-center space-x-1 sm:space-x-2 ${
-              liked ? "text-red-500" : "text-gray-500"
-            } hover:text-red-500 transition-colors duration-200`}
+            className={`flex items-center space-x-1 sm:space-x-2 ${liked ? "text-red-500" : "text-gray-500"
+              } hover:text-red-500 transition-colors duration-200`}
             onClick={handleLike}
             aria-label={liked ? "Unlike" : "Like"}
           >
             <Heart className={`h-4 w-4 sm:h-5 sm:w-5 ${liked ? "fill-current" : ""}`} />
             <span className="text-xs sm:text-sm">{likes} {likes === 1 ? "Like" : "Likes"}</span>
           </button>
-          <button 
+          <button
             className="flex items-center space-x-1 sm:space-x-2 text-gray-500 hover:text-blue-500 transition-colors duration-200"
             onClick={() => setShowComments(!showComments)}
             aria-label={showComments ? "Hide comments" : "Show comments"}
@@ -82,7 +102,7 @@ export default function SocialCard({
             <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="text-xs sm:text-sm">{comments.length} {comments.length === 1 ? "Comment" : "Comments"}</span>
           </button>
-          <button 
+          <button
             className="flex items-center space-x-1 sm:space-x-2 text-gray-500 hover:text-green-500 transition-colors duration-200"
             onClick={onShare}
             aria-label="Share"

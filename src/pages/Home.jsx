@@ -164,6 +164,7 @@ const Home = () => {
               style={{ transition: 'opacity 0.5s ease', animationDelay: `${index == 0 ? index * 0.2 : 0.2}s` }}
             >
               <InstagramCard
+                postId={post._id}
                 profilePicture={post.userId.profilePic}
                 username={post.userId.username}
                 postImage={post.image}

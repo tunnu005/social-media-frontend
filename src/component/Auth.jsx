@@ -27,6 +27,7 @@ function AuthPage() {
   const [bio, setBio] = useState('');
   const [activeTab, setActiveTab] = useState("signin");
   const [loading, setLoading] = useState(false); // Loading state
+  const [inLoading,setinLoading] = useState(false); // In loading state
 
   const navigate = useNavigate();
 
@@ -81,10 +82,10 @@ function AuthPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    setinLoading(true);
     const user = await login({ username, password });
     // console.log('user at auth : ', user);
-
+    setinLoading(false);
     if (user.success) {
       localStorage.setItem('user', JSON.stringify(user.user));
       toast(user.message, {
@@ -178,7 +179,13 @@ function AuthPage() {
                     type="submit"
                     className="w-full bg-black text-white hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
                   >
-                    Sign In
+                   {inLoading ? <span className="flex items-center justify-center">
+                        <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0114.9 3.6l-1.6-.8A6 6 0 10.5 12h3.2z" />
+                        </svg>
+                        Signing In...
+                      </span> : " Sign In"}
                   </Button>
                 </form>
               </TabsContent>
@@ -305,7 +312,7 @@ function AuthPage() {
             </Tabs>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full border-2 hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+            {/* <Button variant="outline" className="w-full border-2 hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
               <svg
                 className="mr-2 h-4 w-4"
                 aria-hidden="true"
@@ -322,7 +329,7 @@ function AuthPage() {
                 ></path>
               </svg>
               Sign up with Google
-            </Button>
+            </Button> */}
           </CardFooter>
         </Card>
       </div>

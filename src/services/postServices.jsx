@@ -21,3 +21,9 @@ export const gethomepost = async({page,limit})=>{
   const response = await axios.get(`${serverapi}/api/posts/getHome/${page}/${limit}`,{withCredentials: true})
   return response.data;
 }
+
+
+export const addlike = async({postId,liked})=>{
+    const response = await axios.post(`${serverapi}/api/posts/addlike`,{postId,liked},{withCredentials: true})
+    return response.data;
+}
