@@ -33,19 +33,19 @@ const CoolProfilePage = () => {
     useEffect(() => {
         // Set loading true before fetching
         const fetchProfile = async () => {
-        //   setuserloading(true)
-          try {
-            const profile = await getUser();
-            // console.log('Profile loaded', profile)
-            setUserProfile(profile);
-          } catch (error) {
-            console.error('Error fetching profile:', error);
-          }
-        //   setuserloading(false);
+            //   setuserloading(true)
+            try {
+                const profile = await getUser();
+                // console.log('Profile loaded', profile)
+                setUserProfile(profile);
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            }
+            //   setuserloading(false);
         };
         fetchProfile();
         // Set loading false after fetching
-      }, []);
+    }, []);
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -168,7 +168,7 @@ const CoolProfilePage = () => {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px] text-white">
                                 <div className="space-y-4">
-                                    <img src={post.image} alt={post.caption} className="w-full h-96 object-cover rounded-lg" />
+                                    <img src={post.image} alt={post.caption} className="w-full h-64 sm:h-80 md:h-96 object-cover rounded-lg" />
                                     <p className="text-center font-medium">{post.caption}</p>
                                     <div className="flex justify-between items-center">
                                         <Button variant="ghost" size="sm" onClick={handleLike}>
@@ -181,7 +181,7 @@ const CoolProfilePage = () => {
                                         </Button>
                                     </div>
                                     <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-                                        {Array.from({ length: post.comments }).map((_, i) => (
+                                        {Array.from({ length: 5 }).map((_, i) => (
                                             <div key={i} className="mb-4">
                                                 <p className="font-semibold">User {i + 1}</p>
                                                 <p className="text-sm text-muted-foreground">Great post!</p>

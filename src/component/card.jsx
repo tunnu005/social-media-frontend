@@ -1,7 +1,7 @@
 import React, { useState,useCallback } from "react"
 import { Heart, MessageCircle, Share2, ChevronDown, ChevronUp, Send } from "lucide-react"
 import { serverapi } from "@/data/server";
-import { addlike } from "@/services/postServices";
+import { addComment, addlike } from "@/services/postServices";
 
 function debounce(func, delay) {
   let timeout;
@@ -50,10 +50,11 @@ export default function SocialCard({
   const handleAddComment = (e) => {
     e.preventDefault()
     if (newComment.trim()) {
-      const comment = { id: comments.length + 1, user: "You", text: newComment.trim() }
+      const comment = { id: comments.length + 1, user: username, text: newComment.trim() }
       setComments([...comments, comment])
       setNewComment("")
       onComment(comment.text)
+      addComment({postId,text:newComment})
     }
   }
 

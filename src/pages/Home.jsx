@@ -170,7 +170,7 @@ const Home = () => {
                 postImage={post.image}
                 caption={post.caption}
                 initialLikes={post.likes}
-                initialComments={Comments}
+                initialComments={post.comments}
                 likedby={post.likedByUser}
               />
             </div>

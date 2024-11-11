@@ -27,3 +27,8 @@ export const addlike = async({postId,liked})=>{
     const response = await axios.post(`${serverapi}/api/posts/addlike`,{postId,liked},{withCredentials: true})
     return response.data;
 }
+
+export const addComment = async({postId,text}) =>{
+  const response = await axios.post(`${serverapi}/api/posts/addcomment`,{postId,text},{withCredentials: true})
+  return response.data;
+}
